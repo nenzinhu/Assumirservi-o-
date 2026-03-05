@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assunção de Serviço Pro</title>
+    <style>
+        :root { --primary: #1e3a8a; --secondary: #3b82f6; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { background: var(--card); padding: 2rem; width: 100%; max-width: 600px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .grid-inputs { display: grid; gap: 12px; }
+        .input-group { display: flex; flex-direction: column; }
+        .row { display: grid; grid-template-columns: 140px 1fr; gap: 10px; align-items: end; margin-bottom: 5px; }
+        label { font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; color: #64748b; text-transform: uppercase; }
+        input, select { padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; transition: all 0.3s; outline: none; font-size: 0.9rem; }
+        input:focus, select:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .viatura-input { display: flex; align-items: center; background: #e2e8f0; border-radius: 8px; border: 2px solid #e2e8f0; }
+        .viatura-input span { padding: 0 12px; font-weight: bold; color: var(--primary); }
+        .viatura-input input { border: none; flex-grow: 1; border-radius: 0 6px 6px 0; }
+        button { margin-top: 15px; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; text-transform: uppercase; }
+        button:hover { background: var(--secondary); }
+        #resultado-container { margin-top: 20px; display: none; animation: fadeIn 0.4s ease; }
+        #resultado { white-space: pre-line; background: #f1f5f9; padding: 15px; border-left: 5px solid var(--primary); border-radius: 4px; font-family: monospace; }
+        .btn-copy { background: #10b981; margin-top: 10px; }
+        .btn-whats { background: #25D366; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🚔 Assunção de Serviço</h2>
+    
+    <div class="grid-inputs">
+        <div class="input-group">
+            <label>Viatura</label>
+            <div class="viatura-input">
+                <span>PM-</span>
+                <input type="text" id="viatura" placeholder="0000" maxlength="4">
+            </div>
+        </div>
+
+        <label>Guarnição (Posto e Nome)</label>
+        <div class="row">
+            <select id="grad1"><option value="Sd PM">Soldado</option><option value="Cb PM">Cabo</option><option value="3º Sgt PM">3º Sgt</option><option value="2º Sgt PM">2º Sgt</option><option value="1º Sgt PM">1º Sgt</option><option value="Sub-Ten PM">Sub-Ten</option></select>
+            <input type="text" id="nome1" placeholder="Policial 1" oninput="formatarNome(this)">
+        </div>
+        <div class="row">
+            <select id="grad2"><option value="Sd PM">Soldado</option><option value="Cb PM">Cabo</option><option value="3º Sgt PM">3º Sgt</option><option value="2º Sgt PM">2º Sgt</option><option value="1º Sgt PM">1º Sgt</option><option value="Sub-Ten PM">Sub-Ten</option></select>
+            <input type="text" id="nome2" placeholder="Policial 2 (Opcional)" oninput="formatarNome(this)">
+        </div>
+        <div class="row">
+            <select id="grad3"><option value="Sd PM">Soldado</option><option value="Cb PM">Cabo</option><option value="3º Sgt PM">3º Sgt</option><option value="2º Sgt PM">2º Sgt</option><option value="1º Sgt PM">1º Sgt</option><option value="Sub-Ten PM">Sub-Ten</option></select>
+            <input type="text" id="nome3" placeholder="Policial 3 (Opcional)" oninput="formatarNome(this)">
+        </div>
+        <div class="row">
+            <select id="grad4"><option value="Sd PM">Soldado</option><option value="Cb PM">Cabo</option><option value="3º Sgt PM">3º Sgt</option><option value="2º Sgt PM">2º Sgt</option><option value="1º Sgt PM">1º Sgt</option><option value="Sub-Ten PM">Sub-Ten</option></select>
+            <input type="text" id="nome4" placeholder="Policial 4 (Opcional)" oninput="formatarNome(this)">
+        </div>
+
+        <div class="input-group">
+            <label>Turno / Horário</label>
+            <select id="horario" onchange="toggleManualTime()">
+                <option value="07h às 19h">07h às 19h (Diurno)</option>
+                <option value="19h às 07h">19h às 07h (Noturno)</option>
+                <option value="13h às 01h">13h às 01h</option>
+                <option value="07h às 07h">07h às 07h (24h)</option>
+                <option value="MANUAL">-- Inserir Manualmente --</option>
+            </select>
+            <input type="text" id="horarioManual" class="manual-time" placeholder="Ex: 08h às 14h">
+        </div>
+
+        <div class="input-group">
+            <label>Localização</label>
+            <select id="local">
+                <option>P19</option>
+                <option>Ponte</option>
+                <option>Viatura de apoio no P19</option>
+                <option>Setor 3 – Área Central / Pontes</option>
+                <option>Apoio / Futebol</option>
+                <option>Pontes / Futebol</option>
+            </select>
+            <input type="text" id="localManual" placeholder="Local manual (opcional)">
+        </div>
+    </div>
+
+    <button onclick="gerar()">⚡ GERAR TEXTO</button>
+
+    <div id="resultado-container">
+        <div id="resultado"></div>
+        <button class="btn-copy" onclick="copiar()">📋 COPIAR TEXTO</button>
+        <button class="btn-whats" onclick="whatsapp()">📲 ENVIAR PELO WHATSAPP</button>
+    </div>
+</div>
+
+<script>
+    function formatarNome(input) {
+        let valor = input.value;
+        if (valor.length > 0) {
+            input.value = valor.charAt(0).toUpperCase() + valor.slice(1).toLowerCase();
+        }
+    }
+
+    function toggleManualTime() {
+        const select = document.getElementById("horario");
+        const manualInput = document.getElementById("horarioManual");
+        manualInput.style.display = (select.value === "MANUAL") ? "block" : "none";
+    }
+
+    function gerar() {
+        const numViatura = document.getElementById("viatura").value;
+
+        let local = document.getElementById("local").value;
+        const localManual = document.getElementById("localManual").value.trim();
+        if (localManual !== "") local = localManual;
+
+        let horario = document.getElementById("horario").value;
+        if(horario === "MANUAL") horario = document.getElementById("horarioManual").value;
+
+        let guarnicao = [];
+        for(let i=1; i<=4; i++) {
+            let grad = document.getElementById(`grad${i}`).value;
+            let nome = document.getElementById(`nome${i}`).value.trim();
+            if(nome !== "") guarnicao.push(`${grad} ${nome}`);
+        }
+
+        if(!numViatura || guarnicao.length === 0) {
+            alert("Preencha ao menos a Viatura e o Policial 1!");
+            return;
+        }
+
+        const horaAtual = new Date().getHours();
+        let saudacao = "🌙 Boa noite";
+        if (horaAtual >= 5 && horaAtual < 12) saudacao = "☀️ Bom dia";
+        else if (horaAtual >= 12 && horaAtual < 18) saudacao = "🌤️ Boa tarde";
+
+        const texto = `${saudacao}! Guarnição iniciando serviço\n\n` + 
+                      `🔹 *Viatura:* PM-${numViatura}\n` + 
+                      `🔹 *Policiais:* ${guarnicao.join(" / ")}\n` + 
+                      `🔹 *Horário:* ${horario}\n` + 
+                      `🔹 *Local:* ${local}\n\n` + 
+                      `Bom serviço a todos! 👮‍♂️⚡`;
+
+        document.getElementById("resultado").textContent = texto;
+        document.getElementById("resultado-container").style.display = "block";
+    }
+
+    function copiar() {
+        const texto = document.getElementById("resultado").textContent;
+        navigator.clipboard.writeText(texto).then(() => {
+            const btn = document.querySelector('.btn-copy');
+            btn.textContent = "✅ COPIADO!";
+            setTimeout(() => btn.textContent = "📋 COPIAR TEXTO", 2000);
+        });
+    }
+
+    function whatsapp() {
+        const texto = document.getElementById("resultado").textContent;
+        const url = "https://wa.me/?text=" + encodeURIComponent(texto);
+        window.open(url, "_blank");
+    }
+</script>
+
+</body>
+</html>
